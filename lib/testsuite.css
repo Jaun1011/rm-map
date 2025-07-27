@@ -1,0 +1,5 @@
+.tests {
+    display: grid;
+    grid-template-columns: max-content max-content;
+    grid-column-gap: 2ch;
+}
