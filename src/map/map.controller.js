@@ -82,6 +82,10 @@ export const MapController = () => {
             ])
         },
 
+        updateLinePoints: ($line, p1, p2) => {
+            $line.setValue([p1, p2])
+        },
+
 
 
         selectItem: $$selected.setValue,
