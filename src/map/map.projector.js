@@ -4,6 +4,11 @@ import {dom} from "../../lib/dom.js";
 import {LinAlg, Point} from "../../lib/linalg.js";
 
 
+const projectDisableShadowButton = controller => {
+    const [button] = dom(`<button>shadows</button>`);
+    button.onclick = _ => controller.toggleShadow();
+    return button;
+}
 
 const projectWallButton = controller => {
     const [lineButton] = dom(`<button>line</button>`);
@@ -16,10 +21,7 @@ const projectWallButton = controller => {
 
 
 const DragAndDrop = (item, callback) => {
-
-
     let isDragged = false;
-
     let lastPoint = {};
 
     item.addEventListener("mousedown", event => {
@@ -50,8 +52,8 @@ const DragAndDrop = (item, callback) => {
         isDragged = false;
     }
 
-    addEventListener("mousemove",  dragging);
-    addEventListener("mouseup",    draggingEnd);
+    addEventListener("mousemove", dragging);
+    addEventListener("mouseup", draggingEnd);
     addEventListener("mouseleave", draggingEnd);
 }
 
@@ -162,10 +164,16 @@ const projectShadow = controller => {
             polygon.setAttribute("points", points);
         });
 
+        controller.onShowShadowChange(toggle => {
+            polygon.setAttribute("visibility", toggle ? "visible" : "hidden");
+
+        })
+
+
         g.appendChild(polygon);
     })
 
-    return  g;
+    return g;
 }
 
 const projectSvg = (controller) => {
@@ -186,6 +194,7 @@ const projectButtonBar = (controller) => {
 
     bar.setAttribute("class", "buttonbar");
     bar.appendChild(projectWallButton(controller));
+    bar.appendChild(projectDisableShadowButton(controller));
     return bar;
 }
 

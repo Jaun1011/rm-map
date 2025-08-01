@@ -14,7 +14,7 @@ const calcShadow = (p) => (line) => {
         y: line[1].y - p.y
     };
 
-    const n = 10;
+    const n = 1000;
 
     const p1 = {
         x: v1.x * n,
@@ -42,6 +42,9 @@ export const MapController = () => {
         height: window.screenY
     }
 
+    const $showShadows = Observable(true);
+    const $image = Observable("");
+
 
     const $lines = ObservableList([]);
     const $character = Observable({
@@ -49,7 +52,6 @@ export const MapController = () => {
         y: 221
     });
 
-    const $image = Observable("");
 
 
     const $$selected = Observable(Observable([
@@ -61,8 +63,29 @@ export const MapController = () => {
     const $shadows = ObservableList([]);
 
 
+    const calcAllShadows = () => {
+
+        const calcLineShadow = calcShadow($character.getValue());
+
+        for (let $shadow of $shadows.list) {
+
+            const shadow = $shadow.getValue();
+            const line = shadow.$line.getValue();
+            const points =  calcLineShadow(line)
+
+            $shadow.setValue({
+                points: points,
+                $line: shadow.$line,
+            });
+        }
+    }
+
+
+
     return {
         frameSize,
+        toggleShadow: _ =>  $showShadows.setValue(!$showShadows.getValue()),
+        onShowShadowChange: $showShadows.onChange,
 
         setImage: $image.setValue,
         onImageChange: $image.onChange,
@@ -72,22 +95,7 @@ export const MapController = () => {
 
             $character.setValue(newPoint);
 
-            const calcLineShadow = calcShadow(newPoint);
-
-            for (let $shadow of $shadows.list) {
-
-
-                const shadow = $shadow.getValue();
-                const line = shadow.$line.getValue();
-                const points =  calcLineShadow(line)
-
-
-
-                $shadow.setValue({
-                    points: points,
-                    $line: shadow.$line,
-                });
-            }
+            calcAllShadows();
         },
 
 
@@ -115,13 +123,13 @@ export const MapController = () => {
                 LinAlg.add(p2, vector),
             ])
 
-
+            calcAllShadows();
         },
 
         updateLinePoints: ($line, p1, p2) => {
             $line.setValue([p1, p2])
 
-
+            calcAllShadows();
         },
 
 
