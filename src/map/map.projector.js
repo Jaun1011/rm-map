@@ -1,4 +1,4 @@
-import {Circle, Line, PolyLine, Svg, SvgContainer} from "../../lib/svg.js";
+import {Circle, Image, Line, PolyLine, Svg, SvgContainer} from "../../lib/svg.js";
 import {MapController} from "./map.controller.js";
 import {dom} from "../../lib/dom.js";
 import {LinAlg, Point} from "../../lib/linalg.js";
@@ -17,6 +17,16 @@ const projectWallButton = controller => {
         {x: 200, y: 200}
     );
     return lineButton;
+}
+
+const projectImageButton = controller => {
+
+    const [fileUpload] = dom('<input type="file" />');
+
+    fileUpload.addEventListener("change", (event) => {
+        controller.setImage(event.target.files[0]);
+    });
+    return fileUpload;
 }
 
 
@@ -176,10 +186,23 @@ const projectShadow = controller => {
     return g;
 }
 
+const projectImage = (controller) => {
+    const imageElement = Image("");
+    controller.onImageChange(image => {
+
+        imageElement.setAttribute("href", image);
+    });
+
+
+    return imageElement
+}
+
 const projectSvg = (controller) => {
 
     const svgE = Svg();
 
+
+    svgE.appendChild(projectImage(controller));
     svgE.appendChild(projectCharacter(controller));
     svgE.appendChild(projectLine(controller));
     svgE.appendChild(projectSelectedLine(controller));
@@ -195,6 +218,7 @@ const projectButtonBar = (controller) => {
     bar.setAttribute("class", "buttonbar");
     bar.appendChild(projectWallButton(controller));
     bar.appendChild(projectDisableShadowButton(controller));
+    bar.appendChild(projectImageButton(controller))
     return bar;
 }
 

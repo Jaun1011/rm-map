@@ -64,11 +64,9 @@ export const MapController = () => {
 
 
     const calcAllShadows = () => {
-
         const calcLineShadow = calcShadow($character.getValue());
 
         for (let $shadow of $shadows.list) {
-
             const shadow = $shadow.getValue();
             const line = shadow.$line.getValue();
             const points =  calcLineShadow(line)
@@ -87,7 +85,14 @@ export const MapController = () => {
         toggleShadow: _ =>  $showShadows.setValue(!$showShadows.getValue()),
         onShowShadowChange: $showShadows.onChange,
 
-        setImage: $image.setValue,
+        setImage: (image) => {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                $image.setValue(event.target.result);
+            }
+            reader.readAsDataURL(image);
+        },
+
         onImageChange: $image.onChange,
 
         setCharacterPoint: (vector) => {
@@ -134,13 +139,10 @@ export const MapController = () => {
 
 
         selectItem: $$selected.setValue,
-
-
         onSelected: $$selected.onChange,
 
-
-        onLineAdd: $lines.onAdd
-
+        onLineAdd: $lines.onAdd,
+        onLIneRemove: $lines.onDel
 
     }
 
