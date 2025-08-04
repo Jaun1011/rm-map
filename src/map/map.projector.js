@@ -223,10 +223,24 @@ const projectButtonBar = (controller) => {
 }
 
 
+const projectKeyMapping = (controller) => {
+    document.addEventListener('keydown', function(event) {
+        if ((event.ctrlKey || event.metaKey) && event.key === 'd') {
+            event.preventDefault();
+            controller.duplicateLine();
+
+
+        }
+    });
+}
+
+
 export const projectMap = root => {
 
     const controller = MapController();
 
     root.appendChild(projectButtonBar(controller));
     root.appendChild(projectSvg(controller));
+
+    (projectKeyMapping(controller));
 }

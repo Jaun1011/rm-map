@@ -42,7 +42,7 @@ export const MapController = () => {
         height: window.screenY
     }
 
-    const $showShadows = Observable(true);
+    const $showShadows = Observable(false);
     const $image = Observable("");
 
 
@@ -51,7 +51,6 @@ export const MapController = () => {
         x: 450,
         y: 221
     });
-
 
 
     const $$selected = Observable(Observable([
@@ -69,20 +68,33 @@ export const MapController = () => {
         for (let $shadow of $shadows.list) {
             const shadow = $shadow.getValue();
             const line = shadow.$line.getValue();
-            const points =  calcLineShadow(line)
+            const points = calcLineShadow(line)
 
             $shadow.setValue({
                 points: points,
                 $line: shadow.$line,
             });
         }
-    }
+    };
 
+
+    const addLine = (p1, p2) => {
+        const $line = Observable([p1, p2]);
+        $lines.add($line);
+
+        const p = $character.getValue();
+        $shadows.add(Observable(
+            {
+                points: calcShadow(p)([p1, p2]),
+                $line: $line
+            }
+        ));
+    };
 
 
     return {
         frameSize,
-        toggleShadow: _ =>  $showShadows.setValue(!$showShadows.getValue()),
+        toggleShadow: _ => $showShadows.setValue(!$showShadows.getValue()),
         onShowShadowChange: $showShadows.onChange,
 
         setImage: (image) => {
@@ -107,19 +119,22 @@ export const MapController = () => {
         onCharacterChange: $character.onChange,
         onShadowAdd: $shadows.onAdd,
 
-        addLine: (p1, p2) => {
-            const $line = Observable([p1, p2]);
-            $lines.add($line);
+        addLine,
+        duplicateLine: _ => {
+            const [p1, p2] = $$selected.getValue().getValue();
 
-            const p = $character.getValue();
-            $shadows.add(Observable(
+            const deltaX = 50;
+            const deltaY  = 60;
+            addLine(
                 {
-                    points: calcShadow(p)([p1, p2]),
-                    $line: $line
-                }
-            ));
+                    x: p1.x + deltaX,
+                    y: p1.y + deltaY,
+                },
+                {
+                    x: p2.x + deltaX,
+                    y: p2.y + deltaY,
+                });
         },
-
         moveLine: ($line, vector) => {
             const [p1, p2] = $line.getValue()
 
